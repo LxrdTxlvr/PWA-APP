@@ -3,6 +3,8 @@
 // Estrategias de Caché: Cache-First, Network-First, Stale-While-Revalidate
 // ==========================================================================
 
+importScripts('./js/db.js');
+
 const CACHE_VERSION = 'v2';
 const STATIC_CACHE = `cafe-aroma-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `cafe-aroma-dynamic-${CACHE_VERSION}`;
@@ -174,3 +176,70 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+
+// --------------------------------------------------------------------------
+// 5. EVENTO SYNC: Background Sync para Reseñas Offline (Fase 8.3)
+// --------------------------------------------------------------------------
+self.addEventListener('sync', (event) => {
+  console.log('[SW] Evento sync disparado con tag:', event.tag);
+  if (event.tag === 'sync-reviews') {
+    event.waitUntil(syncReviewsFromSW());
+  }
+});
+
+async function syncReviewsFromSW() {
+  console.log('[SW-Sync] Procesando cola de reseñas en segundo plano...');
+  try {
+    if (!self.CafeDB) {
+      console.warn('[SW-Sync] CafeDB no disponible en el Worker');
+      return;
+    }
+
+    const pending = await self.CafeDB.getPendingReviews();
+    if (!pending || pending.length === 0) {
+      console.log('[SW-Sync] No hay reseñas pendientes para sincronizar');
+      return;
+    }
+
+    console.log(`[SW-Sync] Sincronizando ${pending.length} reseñas pendientes...`);
+
+    for (const review of pending) {
+      try {
+        const response = await fetch('/api/resenas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(review)
+        });
+
+        if (response.ok) {
+          await self.CafeDB.deletePendingReview(review.id);
+          console.log(`[SW-Sync] Reseña ${review.id} sincronizada y removida de cola`);
+        }
+      } catch (err) {
+        console.warn(`[SW-Sync] Error al enviar reseña ${review.id}:`, err);
+        throw err; // Permite al navegador reintentar el sync más tarde
+      }
+    }
+
+    // Notificar a los clientes activos para que refresquen la UI
+    const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
+    clients.forEach((client) => {
+      client.postMessage({
+        type: 'REVIEWS_SYNCED',
+        count: pending.length
+      });
+    });
+
+    // Mostrar notificación local si el permiso fue concedido
+    if (self.registration.showNotification) {
+      self.registration.showNotification('Café Aroma - Sincronización Completa', {
+        body: `Se publicaron tus ${pending.length} reseña(s) al restablecer la conexión.`,
+        icon: './icons/icon-192x192.png',
+        badge: './icons/icon-72x72.png',
+        tag: 'sync-notification'
+      });
+    }
+  } catch (error) {
+    console.error('[SW-Sync] Fallo en la sincronización en segundo plano:', error);
+  }
+}

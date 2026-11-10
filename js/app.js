@@ -543,8 +543,50 @@ function renderAjustesView(container) {
 }
 
 // --------------------------------------------------------------------------
-// Funciones de Reseñas y Sincronización (preparadas para Fase 8)
+// Funciones de Reseñas y Sincronización (Fase 8)
 // --------------------------------------------------------------------------
+async function syncPendingReviews() {
+  if (!navigator.onLine) {
+    console.log('[Sync] Dispositivo sin conexión. Sincronización pospuesta.');
+    return;
+  }
+
+  if (!window.CafeDB) return;
+
+  try {
+    const pending = await CafeDB.getPendingReviews();
+    if (!pending || pending.length === 0) return;
+
+    console.log(`[Sync-Client] Sincronizando ${pending.length} reseñas pendientes...`);
+    let syncedCount = 0;
+
+    for (const review of pending) {
+      try {
+        const res = await fetch('/api/resenas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(review)
+        });
+
+        if (res.ok) {
+          await CafeDB.deletePendingReview(review.id);
+          syncedCount++;
+        }
+      } catch (e) {
+        console.warn('[Sync-Client] Error al sincronizar reseña individual:', e);
+      }
+    }
+
+    if (syncedCount > 0) {
+      showToast(`✨ Se sincronizaron ${syncedCount} reseña(s) con el servidor`);
+      loadReviewsList();
+    }
+  } catch (err) {
+    console.error('[Sync-Client] Error durante la sincronización:', err);
+  }
+}
+window.syncPendingReviews = syncPendingReviews;
+
 async function loadReviewsList() {
   const container = document.getElementById('reviews-container');
   if (!container) return;
@@ -789,6 +831,15 @@ function registerServiceWorker() {
           if (!refreshing) {
             refreshing = true;
             window.location.reload();
+          }
+        });
+
+        // Escuchar mensajes provenientes del Service Worker (ej. Sincronización completa)
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'REVIEWS_SYNCED') {
+            console.log('[App] Notificación de SW: Reseñas sincronizadas con éxito');
+            showToast(`✨ El Service Worker sincronizó ${event.data.count} reseña(s)`);
+            loadReviewsList();
           }
         });
 
