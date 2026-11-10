@@ -173,10 +173,31 @@ async function renderCatalogoView(container, filterCategory = 'Todos') {
   }).join('');
 
   container.innerHTML = `
+    <!-- Hero / Banner de Bienvenida y Botón de Instalación (Fase 5.3) -->
+    <section class="card" style="background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); color: #ffffff; padding: 20px; margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="max-width: 520px;">
+          <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-accent-light);">Experiencia PWA</span>
+          <h1 style="font-size: 1.5rem; font-weight: 800; margin: 4px 0;">Café de Especialidad en tus Manos</h1>
+          <p style="font-size: 0.9rem; opacity: 0.9;">Descubre granos selectos, ubica tu sucursal más cercana y comparte reseñas incluso sin conexión a Internet.</p>
+        </div>
+        <div id="home-install-wrapper">
+          <button id="btn-install-home" class="btn btn-light" style="font-weight: 700; box-shadow: var(--shadow-md);">
+            📲 Instalar App en mi dispositivo
+          </button>
+        </div>
+      </div>
+    </section>
+
     <header class="mb-4">
-      <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--color-primary);">Cafés de Especialidad</h1>
-      <p style="color: var(--text-secondary); font-size: 0.95rem;">Granos seleccionados y tostados artesanalmente en pequeños lotes.</p>
-      <div style="display: flex; gap: 8px; overflow-x: auto; padding: 10px 0;" id="catalog-filters">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--color-primary);">Nuestro Menú de Cafés</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">Granos seleccionados y tostados artesanalmente en pequeños lotes.</p>
+        </div>
+        <span class="tag">⚡ Listo Offline</span>
+      </div>
+      <div style="display: flex; gap: 8px; overflow-x: auto; padding: 12px 0;" id="catalog-filters">
         ${categoriesHtml}
       </div>
     </header>
@@ -185,6 +206,12 @@ async function renderCatalogoView(container, filterCategory = 'Todos') {
       ${cardsHtml}
     </section>
   `;
+
+  // Listener para el botón de instalación en Home (Fase 5.3)
+  const homeInstallBtn = document.getElementById('btn-install-home');
+  if (homeInstallBtn) {
+    homeInstallBtn.addEventListener('click', triggerInstallPrompt);
+  }
 
   // Eventos de filtros
   container.querySelectorAll('.filter-btn').forEach(btn => {
