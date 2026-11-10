@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sucursal-roma",
+    "name": "Café Aroma - Roma Norte",
+    "address": "Calle Colima 184, Roma Norte, CDMX",
+    "lat": 19.4184,
+    "lng": -99.1601,
+    "hours": "Lun - Dom: 07:00 - 21:00",
+    "phone": "+52 55 1234 5678"
+  },
+  {
+    "id": "sucursal-condesa",
+    "name": "Café Aroma - Condesa",
+    "address": "Av. Tamaulipas 88, Hipódromo Condesa, CDMX",
+    "lat": 19.4112,
+    "lng": -99.1745,
+    "hours": "Lun - Dom: 08:00 - 22:00",
+    "phone": "+52 55 8765 4321"
+  },
+  {
+    "id": "sucursal-coyoacan",
+    "name": "Café Aroma - Coyoacán",
+    "address": "Jardín Centenario 12, Del Carmen, Coyoacán, CDMX",
+    "lat": 19.3496,
+    "lng": -99.1625,
+    "hours": "Mar - Dom: 09:00 - 22:00",
+    "phone": "+52 55 4567 8901"
+  },
+  {
+    "id": "sucursal-polanco",
+    "name": "Café Aroma - Polanco",
+    "address": "Av. Horacio 420, Polanco V Sección, CDMX",
+    "lat": 19.4338,
+    "lng": -99.1912,
+    "hours": "Lun - Sáb: 07:30 - 20:30",
+    "phone": "+52 55 9876 5432"
+  }
+]

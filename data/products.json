@@ -1,0 +1,80 @@
+[
+  {
+    "id": "cold-brew-nitro",
+    "name": "Cold Brew Nitro",
+    "category": "Fríos",
+    "price": 68,
+    "rating": 4.9,
+    "reviewsCount": 38,
+    "origin": "Chiapas, México (1,450 msnm)",
+    "roast": "Tueste Medio",
+    "notes": ["Chocolate amargo", "Miel de agave", "Frutos rojos"],
+    "description": "Infusión en frío por 18 horas con micro-burbujas de nitrógeno que producen una corona sedosa similar a una cerveza stout artesanal.",
+    "icon": "🧊"
+  },
+  {
+    "id": "flat-white-artesanal",
+    "name": "Flat White Artesanal",
+    "category": "Calientes",
+    "price": 62,
+    "rating": 4.8,
+    "reviewsCount": 54,
+    "origin": "Coatepec, Veracruz (1,250 msnm)",
+    "roast": "Tueste Claro",
+    "notes": ["Caramelo suave", "Vainilla", "Avellana"],
+    "description": "Doble shot de ristretto con leche cremada a 65°C con microespuma aterciopelada que realza los matices florales del café veracruzano.",
+    "icon": "☕"
+  },
+  {
+    "id": "pour-over-geisha",
+    "name": "Pour Over Geisha",
+    "category": "Filtrados",
+    "price": 85,
+    "rating": 5.0,
+    "reviewsCount": 29,
+    "origin": "Oaxaca - Pluma Hidalgo (1,600 msnm)",
+    "roast": "Tueste Ligero",
+    "notes": ["Jazmín", "Bergamota", "Durazno maduro"],
+    "description": "Variedad Geisha extraída lentamente en método V60. Una taza brillante con acidez cítrica compleja y final floral prolongado.",
+    "icon": "🧪"
+  },
+  {
+    "id": "espresso-romano",
+    "name": "Espresso Romano",
+    "category": "Clásicos",
+    "price": 45,
+    "rating": 4.7,
+    "reviewsCount": 21,
+    "origin": "Puebla - Sierra Norte (1,300 msnm)",
+    "roast": "Tueste Intenso",
+    "notes": ["Cacao 80%", "Ralladura de limón", "Almendra"],
+    "description": "Extracción corta de 30 ml con crema dorada y espesa, acompañada de una tira de piel de limón recién cortada para realzar su dulzor.",
+    "icon": "⚡"
+  },
+  {
+    "id": "cappuccino-canela",
+    "name": "Cappuccino Canela & Miel",
+    "category": "Calientes",
+    "price": 58,
+    "rating": 4.8,
+    "reviewsCount": 47,
+    "origin": "Atoyac, Guerrero (1,350 msnm)",
+    "roast": "Tueste Medio",
+    "notes": ["Canela de Ceilán", "Miel de flor de azahar", "Malta"],
+    "description": "Equilibrio clásico de espresso, leche al vapor y abundante espuma espolvoreada con canela criolla molida en el momento.",
+    "icon": "🍯"
+  },
+  {
+    "id": "affogato-vainilla",
+    "name": "Affogato Vainilla Bourbon",
+    "category": "Especialidades",
+    "price": 72,
+    "rating": 4.9,
+    "reviewsCount": 33,
+    "origin": "Mezcla de la Casa",
+    "roast": "Tueste Medio-Oscuro",
+    "notes": ["Vainilla de Papantla", "Chocolate fundido", "Toffee"],
+    "description": "Una bola de helado artesanal de vainilla natural de Papantla bañada al instante con un shot doble de espresso caliente.",
+    "icon": "🍨"
+  }
+]
