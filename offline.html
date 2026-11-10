@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sin Conexión | Café Aroma PWA</title>
+  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    .offline-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      text-align: center;
+      padding: 24px;
+    }
+    .offline-icon {
+      font-size: 5rem;
+      margin-bottom: 16px;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    .offline-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--color-primary, #5c3a21);
+      margin-bottom: 8px;
+    }
+    .offline-text {
+      font-size: 1rem;
+      color: var(--text-secondary, #705e52);
+      max-width: 440px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .offline-tips {
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border-color, #ebdcd0);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      max-width: 440px;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+    .offline-tips h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .offline-tips ul {
+      padding-left: 20px;
+      font-size: 0.88rem;
+      color: var(--text-secondary, #705e52);
+    }
+    .offline-tips li {
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header App Shell -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="./index.html#/catalogo" class="brand-logo">
+        <span class="brand-icon">☕</span>
+        <span class="brand-name">Café Aroma</span>
+      </a>
+      <div class="header-actions">
+        <span class="network-badge offline">○ Sin Conexión</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div class="offline-page">
+      <div class="offline-icon" aria-hidden="true">📡☕</div>
+      <h1 class="offline-title">Estás fuera de línea</h1>
+      <p class="offline-text">
+        No pudimos cargar esta página porque no tienes conexión a Internet en este momento.
+      </p>
+
+      <div class="offline-tips">
+        <h3>💡 Lo que aún puedes hacer en Café Aroma:</h3>
+        <ul>
+          <li>Explorar los cafés ya guardados en el catálogo local.</li>
+          <li>Escribir una reseña (se sincronizará automáticamente al volver la red).</li>
+          <li>Consultar tus productos guardados en favoritos.</li>
+        </ul>
+      </div>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+        <button onclick="window.location.reload()" class="btn btn-primary">
+          🔄 Reintentar conexión
+        </button>
+        <a href="./index.html#/catalogo" class="btn btn-secondary">
+          📖 Ir al Catálogo Guardado
+        </a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
