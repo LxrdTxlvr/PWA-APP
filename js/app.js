@@ -486,13 +486,14 @@ function renderAjustesView(container) {
         <button id="btn-install-settings" class="btn btn-primary">Instalar Aplicación</button>
       </section>
 
-      <!-- Datos Locales y Caché -->
+      <!-- Datos Locales y Actualizaciones (Fase 9) -->
       <section class="card" style="padding: 16px;">
-        <h2 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">💾 Almacenamiento Local</h2>
+        <h2 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">🔄 Ciclo de Vida y Actualización</h2>
         <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px;">
-          Gestiona los datos almacenados en IndexedDB y Caché Storage.
+          Verifica si existe una nueva versión del Service Worker o borra la caché del sistema.
         </p>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="btn-check-sw-update" class="btn btn-primary">Buscar Actualización de App</button>
           <button id="btn-clear-cache" class="btn btn-secondary">Limpiar Caché Temporal</button>
           <button id="btn-sync-now" class="btn btn-secondary">Sincronizar Reseñas Ahora</button>
         </div>
@@ -524,6 +525,23 @@ function renderAjustesView(container) {
   });
 
   document.getElementById('btn-install-settings')?.addEventListener('click', triggerInstallPrompt);
+
+  document.getElementById('btn-check-sw-update')?.addEventListener('click', async () => {
+    if ('serviceWorker' in navigator) {
+      showToast('🔍 Buscando actualizaciones...');
+      try {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg) {
+          await reg.update();
+          if (!reg.waiting && !reg.installing) {
+            showToast('✓ Tienes la versión más reciente instalada');
+          }
+        }
+      } catch (e) {
+        showToast('Error al verificar actualización');
+      }
+    }
+  });
 
   document.getElementById('btn-clear-cache')?.addEventListener('click', async () => {
     if ('caches' in window) {
