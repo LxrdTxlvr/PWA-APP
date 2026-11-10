@@ -3,6 +3,23 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 
+// Carga asíncrona de web-push (módulo ESM)
+let webpush = null;
+import('web-push').then(wp => {
+  webpush = wp;
+  const vapidKeys = getVapidKeys();
+  if (vapidKeys) {
+    webpush.setVapidDetails(
+      'mailto:admin@cafearoma.com',
+      vapidKeys.publicKey,
+      vapidKeys.privateKey
+    );
+    console.log('🔔 Web Push VAPID inicializado correctamente');
+  }
+}).catch(err => {
+  console.warn('⚠️ No se pudo inicializar web-push:', err.message);
+});
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -13,6 +30,26 @@ app.use(express.json());
 const productsFilePath = path.join(__dirname, 'data', 'products.json');
 const branchesFilePath = path.join(__dirname, 'data', 'branches.json');
 const reviewsFilePath = path.join(__dirname, 'data', 'reviews.json');
+const subscriptionsFilePath = path.join(__dirname, 'data', 'subscriptions.json');
+const vapidFilePath = path.join(__dirname, 'vapid.json');
+
+function getVapidKeys() {
+  if (fs.existsSync(vapidFilePath)) {
+    return JSON.parse(fs.readFileSync(vapidFilePath, 'utf-8'));
+  }
+  return null;
+}
+
+function getSubscriptions() {
+  if (fs.existsSync(subscriptionsFilePath)) {
+    return JSON.parse(fs.readFileSync(subscriptionsFilePath, 'utf-8'));
+  }
+  return [];
+}
+
+function saveSubscriptions(subs) {
+  fs.writeFileSync(subscriptionsFilePath, JSON.stringify(subs, null, 2), 'utf-8');
+}
 
 function getProducts() {
   return JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
@@ -86,6 +123,72 @@ app.post('/api/resenas', (req, res) => {
 
   console.log(`[Servidor] Nueva reseña recibida de ${newReview.author} para ${newReview.productName}`);
   res.status(201).json(newReview);
+});
+
+// --------------------------------------------------------------------------
+// 10.3 Servidor: Endpoints de Web Push y Suscripciones (Fase 10)
+// --------------------------------------------------------------------------
+app.get('/api/push/vapid-public-key', (req, res) => {
+  const keys = getVapidKeys();
+  if (!keys) {
+    return res.status(500).json({ error: 'Claves VAPID no configuradas en el servidor' });
+  }
+  res.json({ publicKey: keys.publicKey });
+});
+
+app.post('/api/push/subscribe', (req, res) => {
+  const subscription = req.body;
+  if (!subscription || !subscription.endpoint) {
+    return res.status(400).json({ error: 'Suscripción inválida' });
+  }
+
+  const subs = getSubscriptions();
+  const exists = subs.some(s => s.endpoint === subscription.endpoint);
+  if (!exists) {
+    subs.push(subscription);
+    saveSubscriptions(subs);
+    console.log(`[Push] Nueva suscripción registrada. Total activas: ${subs.length}`);
+  }
+
+  res.status(201).json({ status: 'subscribed', total: subs.length });
+});
+
+app.post('/api/push/send', async (req, res) => {
+  const { title, body, icon, url } = req.body;
+  const payload = JSON.stringify({
+    title: title || '☕ Café Aroma - Promoción del Día',
+    body: body || '¡Ven hoy por tu Flat White artesanal con 20% de descuento!',
+    icon: icon || './icons/icon-192x192.png',
+    badge: './icons/icon-72x72.png',
+    data: {
+      url: url || './index.html#/catalogo'
+    }
+  });
+
+  const subs = getSubscriptions();
+  if (subs.length === 0) {
+    return res.status(200).json({ message: 'No hay clientes suscritos actualmente' });
+  }
+
+  if (!webpush) {
+    return res.status(503).json({ error: 'Módulo web-push aún no disponible' });
+  }
+
+  const results = await Promise.allSettled(
+    subs.map(sub => webpush.sendNotification(sub, payload))
+  );
+
+  const successful = results.filter(r => r.status === 'fulfilled').length;
+  const failed = results.filter(r => r.status === 'rejected');
+
+  console.log(`[Push] Envíos completados: ${successful} exitosos, ${failed.length} fallidos`);
+
+  res.json({
+    status: 'sent',
+    totalSubscribers: subs.length,
+    successful,
+    failed: failed.length
+  });
 });
 
 // --------------------------------------------------------------------------

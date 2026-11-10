@@ -229,17 +229,74 @@ async function syncReviewsFromSW() {
         count: pending.length
       });
     });
-
-    // Mostrar notificación local si el permiso fue concedido
-    if (self.registration.showNotification) {
-      self.registration.showNotification('Café Aroma - Sincronización Completa', {
-        body: `Se publicaron tus ${pending.length} reseña(s) al restablecer la conexión.`,
-        icon: './icons/icon-192x192.png',
-        badge: './icons/icon-72x72.png',
-        tag: 'sync-notification'
-      });
-    }
   } catch (error) {
     console.error('[SW-Sync] Fallo en la sincronización en segundo plano:', error);
   }
 }
+
+// --------------------------------------------------------------------------
+// 6. EVENTO PUSH & NOTIFICATIONCLICK: Web Push Notifications (Fase 10.5)
+// --------------------------------------------------------------------------
+self.addEventListener('push', (event) => {
+  console.log('[SW] Evento push recibido');
+  let data = {
+    title: '☕ Café Aroma',
+    body: 'Tienes una nueva notificación de Café Aroma.',
+    icon: './icons/icon-192x192.png',
+    badge: './icons/icon-72x72.png',
+    data: { url: './index.html#/catalogo' }
+  };
+
+  if (event.data) {
+    try {
+      data = { ...data, ...event.data.json() };
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon || './icons/icon-192x192.png',
+    badge: data.badge || './icons/icon-72x72.png',
+    vibrate: [150, 80, 150],
+    data: data.data || { url: './index.html#/catalogo' },
+    actions: [
+      { action: 'open', title: 'Ver en la App' },
+      { action: 'close', title: 'Descartar' }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Clic en notificación detectado, acción:', event.action);
+  event.notification.close();
+
+  if (event.action === 'close') {
+    return;
+  }
+
+  const targetUrl = (event.notification.data && event.notification.data.url) 
+    ? event.notification.data.url 
+    : './index.html#/catalogo';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // Si ya hay una pestaña abierta de la app, enfocarla y navegar
+      for (const client of windowClients) {
+        if ('focus' in client) {
+          client.navigate(targetUrl);
+          return client.focus();
+        }
+      }
+      // Si no hay ventana abierta, abrir una nueva
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
