@@ -1,5 +1,15 @@
 [
   {
+    "id": "rev-1794354037592",
+    "productId": "cold-brew-nitro",
+    "productName": "Cold Brew Nitro",
+    "author": "Tester Automatizado",
+    "rating": 5,
+    "comment": "Prueba unitaria de inserción de reseña",
+    "date": "2026-11-10T23:40:37.592Z",
+    "synced": true
+  },
+  {
     "id": "rev-1",
     "productId": "cold-brew-nitro",
     "productName": "Cold Brew Nitro",
