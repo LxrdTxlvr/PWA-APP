@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="Café Aroma - Aplicación Web Progresiva para descubrir cafés de especialidad, sucursales cercanas y compartir reseñas.">
+  <meta name="theme-color" content="#4a2c11">
+  <title>Café Aroma | PWA</title>
+
+  <!-- Favicon y Enlaces de Estilo -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192x192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+  <!-- Splash Screen interno de la app (se oculta al inicializar) -->
+  <div id="app-splash" class="app-splash">
+    <div class="splash-content">
+      <div class="splash-logo">☕</div>
+      <h1 class="splash-title">Café Aroma</h1>
+      <p class="splash-subtitle">Especialidad en cada gota</p>
+      <div class="splash-spinner"></div>
+    </div>
+  </div>
+
+  <!-- Barra de estado de conexión -->
+  <div id="connection-status" class="connection-status hidden" role="status" aria-live="polite">
+    <span class="status-dot"></span>
+    <span id="status-text">Sin conexión a Internet - Modo offline</span>
+  </div>
+
+  <!-- Notificación de actualización del Service Worker -->
+  <aside id="update-banner" class="update-banner hidden" role="alert">
+    <span>✨ Hay una nueva versión disponible.</span>
+    <button id="btn-update-app" class="btn btn-sm btn-light">Actualizar</button>
+  </aside>
+
+  <!-- Banner de Instalación PWA (A2HS) -->
+  <aside id="install-banner" class="install-banner hidden" role="region" aria-label="Instalar aplicación">
+    <div class="install-info">
+      <span class="install-icon">☕</span>
+      <div>
+        <strong>Instala Café Aroma</strong>
+        <p>Accede más rápido y úsala sin conexión.</p>
+      </div>
+    </div>
+    <div class="install-actions">
+      <button id="btn-install-app" class="btn btn-sm btn-primary">Instalar</button>
+      <button id="btn-dismiss-install" class="btn-icon" aria-label="Cerrar banner de instalación">✕</button>
+    </div>
+  </aside>
+
+  <!-- Shell: Encabezado Principal -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="#/catalogo" class="brand-logo" aria-label="Café Aroma Inicio">
+        <span class="brand-icon">☕</span>
+        <span class="brand-name">Café Aroma</span>
+      </a>
+
+      <div class="header-actions">
+        <!-- Botón para alternar tema claro/oscuro -->
+        <button id="btn-theme-toggle" class="btn-icon" aria-label="Cambiar tema de color" title="Cambiar tema">
+          🌓
+        </button>
+        <!-- Indicador de red -->
+        <span id="header-network-indicator" class="network-badge online" title="Conexión en línea">
+          ● Online
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Shell: Contenedor Principal Dinámico (CSR) -->
+  <main id="app-content" class="app-main" tabindex="-1">
+    <!-- Skeleton loader mostrado mientras se cargan los componentes iniciales -->
+    <div class="skeleton-container" id="shell-skeleton">
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton-grid">
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Shell: Barra de Navegación Inferior (Mobile-first) -->
+  <nav class="app-nav" aria-label="Navegación principal">
+    <a href="#/catalogo" class="nav-item active" data-view="catalogo">
+      <span class="nav-icon">📖</span>
+      <span class="nav-label">Catálogo</span>
+    </a>
+    <a href="#/cerca" class="nav-item" data-view="cerca">
+      <span class="nav-icon">📍</span>
+      <span class="nav-label">Cerca de mí</span>
+    </a>
+    <a href="#/resenas" class="nav-item" data-view="resenas">
+      <span class="nav-icon">✍️</span>
+      <span class="nav-label">Reseñas</span>
+      <span id="badge-pending-reviews" class="nav-badge hidden" title="Reseñas pendientes de sincronizar">0</span>
+    </a>
+    <a href="#/ajustes" class="nav-item" data-view="ajustes">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Ajustes</span>
+    </a>
+  </nav>
+
+  <!-- Toast de mensajes rápidos -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts principales -->
+  <script src="./js/db.js"></script>
+  <script src="./js/notifications.js"></script>
+  <script src="./js/device.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
